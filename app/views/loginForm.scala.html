@@ -5,7 +5,10 @@
 <!-- Call Login Navigation -->	
  @navigation()
 <div class="row">
-				<div class="col-md-8">
+<div class="col-md-3">
+<div class="panel panel-default">
+  <div class="panel-body">
+  		
 					@form(routes.Application.login()){	
 				<div class="form-group">
 					@inputText(userForm("email"), '_label -> "Email")
@@ -15,8 +18,24 @@
 					</div>
 				}	    
 				</div>			
-		</div>
-			<div class="col-md-4">
-			</div>
+  </div>
+ </div>
 </div>
+<div class="col-md-9">
+	@introductoryContent("Hi")
+	@introductoryContent("Hi")
+	@introductoryContent("Hi")
+	@introductoryContent("Hi")
+</div>
+</div>
+
+<!-- Public Content on index -->
+<div class="row">
+<div class="col-md-8">
+	
+</div>
+
+</div>
+</div>
+@footerNavigation()
 }

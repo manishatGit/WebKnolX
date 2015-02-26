@@ -16,6 +16,8 @@ GET    /login           controllers.Application.login
 
 POST   /updated         controllers.Application.update	
 
+GET    /cancelUpdate    controllers.Application.cancelUpdate(email: String)	
+
 GET    /signOut         controllers.Application.signOut		
 
 GET    /updateProfile   controllers.Application.showUpdate(email: String)		

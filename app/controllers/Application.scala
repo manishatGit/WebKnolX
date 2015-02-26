@@ -13,17 +13,21 @@ import models.KnolXUser
 import models.KnolXUserTable
 import models.UserLogin
 import java.util.Date
-object Application extends Controller {
 
+/**
+ * Controller: Application handles all possible page controls in project webKnolX
+ */
+
+object Application extends Controller {
   def index = Action {
     Ok(views.html.loginForm(userLoginForm))
   }
-  /**
-   * Default Redirection Value Home
-   */
+
   val Home = Redirect(routes.Application.index)
-  /* Mapping KnolXUser form
+  /**
+   *  Mapping KnolXUser form
    */
+
   val knolXUserForm = Form(
     mapping(
       "id" -> ignored(Some(0): Option[Int]),
@@ -37,31 +41,37 @@ object Application extends Controller {
       "created" -> ignored(new Date()),
       "updated" -> ignored(new Date()))(KnolXUser.apply)(KnolXUser.unapply))
 
-  /* Mapping userLogin form
-*/
+  /**
+   *  Mapping userLogin form
+   */
   val userLoginForm = Form(
     mapping(
       "email" -> nonEmptyText,
       "password" -> nonEmptyText)(UserLogin.apply)(UserLogin.unapply))
 
   /**
-   * ********************************************
-   * Handles the submit of 'Signu Up' *
-   * *******************************************
+   * Handles the submit of 'Signu Up'
+   * return: Page UserLogged In
    */
   def register = DBAction { implicit request =>
-    knolXUserForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.signUp(formWithErrors)),
-      knolXUser => {
-        KnolXUserTable.insertKnolXUser(knolXUser)
-        Ok(views.html.userLoggedIn(knolXUser.email))
-      })
+    try {
+      knolXUserForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(html.signUp(formWithErrors)),
+        knolXUser => {
+          KnolXUserTable.insertKnolXUser(knolXUser)
+          Ok(views.html.userLoggedIn(knolXUser.email))
+        })
+    } catch {
+      
+      case e: Exception => Ok(views.html.signUp(knolXUserForm)).flashing("error" -> "User Exists")
+      
+    }
+
   }
 
   /**
-   * *******************************************
-   * Handles the  show Update form of 'Update KnolXUser' *
-   * *******************************************
+   * Handles the  show Update form of 'Update KnolXUser'
+   * @return: update Profile Page
    */
   def showUpdate(email: String) = DBAction { implicit request =>
     KnolXUserTable.getKnolXUserByEmail(email) match {
@@ -70,10 +80,9 @@ object Application extends Controller {
   }
 
   /**
-   * *******************************************
-   * Handles the submit of 'Update KnolXUser' *
-   * *******************************************
+   * Handles the submit of 'Update KnolXUser'
    */
+
   def update() = DBAction { implicit request =>
     knolXUserForm.bindFromRequest.fold(
       formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
@@ -87,47 +96,39 @@ object Application extends Controller {
       })
   }
   /**
-   * *****************************************
-   * Display the 'new KnolXUser form'.        *
-   * *****************************************
+   * Handles Cancel update
    */
-  def createKnolXUser = DBAction {
+  def cancelUpdate(email: String) = Action { implicit request =>
+
+    Ok(views.html.userLoggedIn(email))
+  }
+
+  /**
+   * Displays the 'new KnolXUser form'.
+   */
+
+  def createKnolXUser = DBAction { implicit request =>
     Ok(views.html.signUp(knolXUserForm))
   }
 
   /**
-   * *****************************************
-   * Shows User Login. form                  *
-   * *****************************************
+   * Shows User Login. form
    */
   def showLogin = DBAction {
     Ok(views.html.loginForm(userLoginForm))
   }
 
   /**
-   * *****************************************
-   * Shows User Logged out                   *
-   * *****************************************
+   * Handles UserLogin form submission
    */
-  def signOut = Action {
-    Ok(views.html.userLoggedOut("Signed Out"))
-  }
 
-  /**
-   * *****************************************
-   * Handles UserLogin. submission           *
-   * *****************************************
-   */
   def login = DBAction { implicit request =>
     userLoginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.loginForm(formWithErrors)),
       knolXUser => {
-        if (KnolXUserTable.isUserEmail(knolXUser.email)) {
+        if (KnolXUserTable.isUserValid(knolXUser.email, knolXUser.password)) {
           val formData: Map[String, Seq[String]] = request.body.asFormUrlEncoded.getOrElse(Map())
           val email = formData.getOrElse("email", Seq("default")).head
-          /*
-     * Creating a Cookie with Maximum Age MilliSeconds
-     */
           val MyCookie = Cookie("email", email, Some(5000))
           val timeOut = MyCookie.maxAge.get
           Ok(views.html.userLoggedIn(knolXUser.email)).withSession("userEmail" -> email, "timeout" -> "5000")
@@ -136,4 +137,13 @@ object Application extends Controller {
         }
       })
   }
+
+  /**
+   * Shows User Logged out
+   */
+
+  def signOut = Action {
+    Ok(views.html.userLoggedOut("Signed Out")).withNewSession
+  }
+
 }

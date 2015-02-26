@@ -24,11 +24,11 @@ case class KnolXUser(val id: Option[Int], val name: String, val address: String,
  * Mapper Class KnolxUser Table
  *
  */
-//Defining an implicit java.util to sql Date Mapper Function
-
 class KnolXUserMapper(tag: Tag) extends Table[KnolXUser](tag, "KnolXUser") {
 
-  //Defining an implicit java.util to sql Date Mapper Function
+/**
+ * Defines an implicit java.util to sql Date Mapper Function
+ */
   implicit val util2sqlDateMapper = MappedColumnType.base[java.util.Date, java.sql.Date](
     { utilDate => new java.sql.Date(utilDate.getTime()) },
     { sqlDate => new java.util.Date(sqlDate.getTime()) })
@@ -43,35 +43,41 @@ class KnolXUserMapper(tag: Tag) extends Table[KnolXUser](tag, "KnolXUser") {
   def userType: Column[Int] = column[Int]("userType", O.NotNull)
   def created: Column[Date] = column[Date]("created", O.NotNull)
   def updated: Column[Date] = column[Date]("updated", O.NotNull)
+  def idx = index("idx_a", (email), unique = true)
   def * = (id, name, address, company, email, password, phone, userType, created, updated) <> (KnolXUser.tupled, KnolXUser.unapply)
 }
+
+/**
+ * Object acts as main KnolXUserQuery table
+ */
+
 object KnolXUserTable {
   val KnolXUserTableQuery = TableQuery[KnolXUserMapper]
 
   /**
-   * ************************************************************************************
-   * Inserts the  KnolXUser record into the database                                      *
-   * ************************************************************************************
+   * Inserts the  KnolXUser record into the database                                      
    * @param: knolder record to be deleted
    */
-  def insertKnolXUser(knolXUser: KnolXUser)(implicit s: Session): Int = {
-    KnolXUserTableQuery.insert(knolXUser)
+
+  def insertKnolXUser(knolXUser: KnolXUser)(implicit s: Session): Option[Int] = {
+  
+    KnolXUserTableQuery.insert(knolXUser) match {
+      case 1 => Some(1)
+      case 0 => Some(0)
+    }
   }
 
   /**
-   * ************************************************************************************
-   * Returns the  KnolXUser record by Email                                *
-   * ************************************************************************************
+   * Returns the  KnolXUser record by Email                                
    * @param: KnolXUSer email
    */
 
   def getKnolXUserByEmail(email: String)(implicit session: Session): KnolXUser = {
     KnolXUserTableQuery.filter { x => x.email === email }.list.head
   }
-  /**
-   * ************************************************************************************
-   * Updates the  KnolXUser record in the database table                                *
-   * ************************************************************************************
+  
+  /**y
+   * Updates the  KnolXUser record in the database table                                
    * @param: Knolder Record
    */
 
@@ -80,14 +86,11 @@ object KnolXUserTable {
   }
 
   /**
-   * ************************************************************************************
-   * Returns true if the KnolXUser found with the given email addres                    *
-   * ************************************************************************************
+   * Returns true if the KnolXUser found with the given email addres                    
    * @param: email of the KnolXUser
    */
-  def isUserEmail(email:String)(implicit session: Session):Boolean={
-     KnolXUserTableQuery.filter { x => x.email === email }.list.size>0
+  
+  def isUserValid(email:String, password:String)(implicit session: Session):Boolean={
+     KnolXUserTableQuery.filter { x => x.email === email && x.password === password }.list.size>0  
   }
-  
-  
 } 

@@ -1,11 +1,17 @@
 @* Signup Template File *@
-@(knolXUserForm: Form[KnolXUser])
+@(knolXUserForm: Form[KnolXUser])(implicit flash:play.api.mvc.Flash)
 <!-- Importing Form Helper -->
 @import helper._
 
  @main("Home") {
 	<!-- Begin page content -->
 	<div class="container">
+		@flash.get("error").map { message =>
+           <div class="alert alert-dismissable alert-error">
+               <button type="button" class="close" data-dismiss="close">×</button>
+               <strong>Error User Exists!</strong>@message 
+           </div>
+       }
 		<div class="page-header">
 			<h1>Sign Up</h1>
 		</div>
@@ -30,5 +36,7 @@
 			</div>
 		</div>
 	</div>
+	@footerNavigation()
 }
+
  
