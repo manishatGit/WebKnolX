@@ -1,0 +1,15 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        @stylesheets("Home")
+    </head>
+    <body class="mainbody">
+    	@header()
+        @navigation()
+        @content
+    </body>
+</html>
