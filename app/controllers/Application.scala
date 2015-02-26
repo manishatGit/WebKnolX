@@ -51,10 +51,39 @@ object Application extends Controller {
    */
   def register = DBAction { implicit request =>
     knolXUserForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.Signup(formWithErrors)),
+      formWithErrors => BadRequest(html.signUp(formWithErrors)),
       knolXUser => {
         KnolXUserTable.insertKnolXUser(knolXUser)
-        Ok(views.html.UserLoggedIn(knolXUser.email))
+        Ok(views.html.userLoggedIn(knolXUser.email))
+      })
+  }
+
+  /**
+   * *******************************************
+   * Handles the  show Update form of 'Update KnolXUser' *
+   * *******************************************
+   */
+  def showUpdate(email: String) = DBAction { implicit request =>
+    KnolXUserTable.getKnolXUserByEmail(email) match {
+      case knolXUser => Ok(html.updateProfile(knolXUserForm.fill(knolXUser)))
+    }
+  }
+
+  /**
+   * *******************************************
+   * Handles the submit of 'Update KnolXUser' *
+   * *******************************************
+   */
+  def update() = DBAction { implicit request =>
+    knolXUserForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
+      knolXUser => {
+        val userEmail = request.session.get("userEmail").get
+        val userId = KnolXUserTable.getKnolXUserByEmail(userEmail).id
+        val knolderToUpdate: KnolXUser = knolXUser.copy(userId)
+        knolderToUpdate.updated = new Date()
+        KnolXUserTable.updateKnolXUser(knolderToUpdate)
+        Ok(views.html.userLoggedIn(knolderToUpdate.email))
       })
   }
   /**
@@ -63,7 +92,7 @@ object Application extends Controller {
    * *****************************************
    */
   def createKnolXUser = DBAction {
-    Ok(views.html.Signup(knolXUserForm))
+    Ok(views.html.signUp(knolXUserForm))
   }
 
   /**
@@ -81,7 +110,7 @@ object Application extends Controller {
    * *****************************************
    */
   def signOut = Action {
-    Ok(views.html.UserLoggedOut("Signed Out"))
+    Ok(views.html.userLoggedOut("Signed Out"))
   }
 
   /**
@@ -99,9 +128,9 @@ object Application extends Controller {
           /*
      * Creating a Cookie with Maximum Age MilliSeconds
      */
-          val MyCookie = Cookie("email",email, Some(5000))
+          val MyCookie = Cookie("email", email, Some(5000))
           val timeOut = MyCookie.maxAge.get
-           Ok(views.html.UserLoggedIn(knolXUser.email)).withSession("userEmail" -> email,"timeout"->"5000")
+          Ok(views.html.userLoggedIn(knolXUser.email)).withSession("userEmail" -> email, "timeout" -> "5000")
         } else {
           Ok("Invalid User")
         }

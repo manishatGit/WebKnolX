@@ -1,0 +1,16 @@
+@* userNavigation Template File *@
+@(userName: String)
+<nav class="navbar navbar-default">
+	<!-- Login Form  -->
+	<div class="row">
+		<div class="col-md-10">
+				@userName : <a href="@routes.Application.showUpdate(userName)">Update</a>
+		</div>
+			
+	<div class="navigation">
+		<div class = "col-md-2">
+				<a href="@routes.Application.signOut">Sign Out</a>	
+		</div>
+	</div>
+	</div>
+</nav>

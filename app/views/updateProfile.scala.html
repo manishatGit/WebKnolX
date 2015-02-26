@@ -1,0 +1,38 @@
+@* Update Template File *@
+@(knolXUserForm: Form[KnolXUser])
+<!-- Importing Form Helper -->
+@import helper._
+
+ @main("Home") {
+	<!-- Begin page content -->
+	<!-- Add User Navigation -->
+	
+	@userNavigation(knolXUserForm.get.email)
+	
+	<div class="container">
+		<div class="page-header">
+			<h1>Update Profile</h1>
+		</div>
+		<div class="row">
+				<div class="col-md-8">
+					@form(routes.Application.update()){	
+				<div class="form-group">
+					@inputText(knolXUserForm("name"), '_label -> "Name")
+					@inputText(knolXUserForm("company"), '_label -> "Company")
+					@inputText(knolXUserForm("email"), '_label -> "Email")
+					@inputPassword(knolXUserForm("password"), '_label -> "Password")
+					@inputText(knolXUserForm("phone"), '_label -> "Phone")
+					@inputText(knolXUserForm("address"), '_label -> "Address")
+				<div class="actions">
+						<input type="submit" value="Update" class="btn btn-primary" > or 
+						<a href="@routes.Application.index" class="btn btn-default">Cancel</a>
+				</div>
+				}	    
+				</div>			
+		</div>
+			<div class="col-md-4">
+			</div>
+		</div>
+	</div>
+}
+ 

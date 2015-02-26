@@ -18,7 +18,7 @@ case class UserLogin(val email: String, val password: String)
 /**
  * Case class KnolxUser
  */
-case class KnolXUser(val id: Option[Int], val name: String, val address: String, val company: String, val email: String, val password: String, val phone: String, val userType: Int, created: Date, updated: Date)
+case class KnolXUser(val id: Option[Int], val name: String, val address: String, val company: String, val email: String, val password: String, val phone: String, val userType: Int, created: Date, var updated: Date)
 
 /**
  * Mapper Class KnolxUser Table

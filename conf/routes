@@ -3,15 +3,21 @@
 # ~~~~
 
 # Home page
-GET    /               controllers.Application.index
+GET    /                controllers.Application.index
 
 
-GET    /signUP         controllers.Application.createKnolXUser
+GET    /signUP          controllers.Application.createKnolXUser
 
-POST   /register       controllers.Application.register
+POST   /register        controllers.Application.register
 
-POST   /login          controllers.Application.login	
+POST   /login           controllers.Application.login
 
-GET 	/signOut		   controllers.Application.signOut					
+GET    /login           controllers.Application.login
+
+POST   /updated         controllers.Application.update	
+
+GET    /signOut         controllers.Application.signOut		
+
+GET    /updateProfile   controllers.Application.showUpdate(email: String)		
 # Map static resources from the /public folder to the /assets URL path
-GET    /assets/*file   controllers.Assets.at(path="/public", file)
+GET    /assets/*file    controllers.Assets.at(path="/public", file)
