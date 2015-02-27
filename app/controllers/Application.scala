@@ -98,8 +98,7 @@ object Application extends Controller {
           Ok(views.html.userLoggedIn(knolXUser.email))
         })
     } catch {
-
-      case e: Exception => Ok(views.html.signUp(knolXUserForm)).flashing("error" -> "User Exists")
+      case e: Exception => Redirect("/signUP").flashing("error" -> "User Exists")
 
     }
 
@@ -154,7 +153,7 @@ object Application extends Controller {
    * Shows User Login. form
    */
   def showLogin = DBAction {
-    Ok(views.html.loginForm(userLoginForm))
+    Ok(views.html.loginForm(userLoginForm)).withNewSession
   }
 
   /**
