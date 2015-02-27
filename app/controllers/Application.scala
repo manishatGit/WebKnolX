@@ -13,17 +13,53 @@ import models.KnolXUser
 import models.KnolXUserTable
 import models.UserLogin
 import java.util.Date
+import play.api.data.validation.Constraint
+import play.api.data.validation.ValidationError
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 
 /**
  * Controller: Application handles all possible page controls in project webKnolX
  */
 
 object Application extends Controller {
-  def index = Action {
-    Ok(views.html.loginForm(userLoginForm))
+  def index = DBAction { implicit request =>
+    //Check for session existence
+    request.session.get("userEmail") match {
+      case userMail => Ok(views.html.userLoggedIn(userMail.get))
+      case None     => Redirect("/").withNewSession
+    }
+
   }
 
   val Home = Redirect(routes.Application.index)
+  /**
+   * Defines a custom Constraint to check email
+   */
+
+  /**
+   * password Regular Expression
+   */
+  val allNumbers = """\d*""".r
+  val allLetters = """[A-Za-z]*""".r
+
+  /**
+   * Defines the passwordCheck Constraint
+   */
+  val passwordCheckConstraint: Constraint[String] = Constraint("constraints.passwordcheck")({
+    plainText =>
+      val errors = plainText match {
+        case allNumbers() => Seq(ValidationError("Password is all numbers"))
+        case allLetters() => Seq(ValidationError("Password is all letters"))
+        case _            => Nil
+      }
+      if (errors.isEmpty) {
+        Valid
+      } else {
+        Invalid(errors)
+      }
+  })
+
   /**
    *  Mapping KnolXUser form
    */
@@ -34,7 +70,7 @@ object Application extends Controller {
       "name" -> nonEmptyText,
       "address" -> text,
       "company" -> nonEmptyText,
-      "email" -> nonEmptyText,
+      "email" -> email,
       "password" -> nonEmptyText,
       "phone" -> nonEmptyText,
       "userType" -> ignored(2),
@@ -46,8 +82,8 @@ object Application extends Controller {
    */
   val userLoginForm = Form(
     mapping(
-      "email" -> nonEmptyText,
-      "password" -> nonEmptyText)(UserLogin.apply)(UserLogin.unapply))
+      "email" -> email,
+      "password" -> nonEmptyText.verifying(passwordCheckConstraint))(UserLogin.apply)(UserLogin.unapply))
 
   /**
    * Handles the submit of 'Signu Up'
@@ -62,9 +98,9 @@ object Application extends Controller {
           Ok(views.html.userLoggedIn(knolXUser.email))
         })
     } catch {
-      
+
       case e: Exception => Ok(views.html.signUp(knolXUserForm)).flashing("error" -> "User Exists")
-      
+
     }
 
   }
@@ -84,16 +120,19 @@ object Application extends Controller {
    */
 
   def update() = DBAction { implicit request =>
-    knolXUserForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
-      knolXUser => {
-        val userEmail = request.session.get("userEmail").get
-        val userId = KnolXUserTable.getKnolXUserByEmail(userEmail).id
-        val knolderToUpdate: KnolXUser = knolXUser.copy(userId)
-        knolderToUpdate.updated = new Date()
-        KnolXUserTable.updateKnolXUser(knolderToUpdate)
-        Ok(views.html.userLoggedIn(knolderToUpdate.email))
-      })
+    try {
+      knolXUserForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
+        knolXUser => {
+          val userEmail = request.session.get("userEmail").get
+          val userId = KnolXUserTable.getKnolXUserByEmail(userEmail).id
+          val knolderToUpdate: KnolXUser = knolXUser.copy(userId)
+          knolderToUpdate.updated = new Date()
+          KnolXUserTable.updateKnolXUser(knolderToUpdate)
+          Ok(views.html.userLoggedIn(knolderToUpdate.email))
+        })
+    }
+
   }
   /**
    * Handles Cancel update

@@ -59,12 +59,9 @@ object KnolXUserTable {
    * @param: knolder record to be deleted
    */
 
-  def insertKnolXUser(knolXUser: KnolXUser)(implicit s: Session): Option[Int] = {
+  def insertKnolXUser(knolXUser: KnolXUser)(implicit s: Session): Int = {
   
-    KnolXUserTableQuery.insert(knolXUser) match {
-      case 1 => Some(1)
-      case 0 => Some(0)
-    }
+    KnolXUserTableQuery.insert(knolXUser)
   }
 
   /**
@@ -76,7 +73,7 @@ object KnolXUserTable {
     KnolXUserTableQuery.filter { x => x.email === email }.list.head
   }
   
-  /**y
+  /**
    * Updates the  KnolXUser record in the database table                                
    * @param: Knolder Record
    */
@@ -88,9 +85,18 @@ object KnolXUserTable {
   /**
    * Returns true if the KnolXUser found with the given email addres                    
    * @param: email of the KnolXUser
+   * @param: password of the KnolXUser
    */
   
   def isUserValid(email:String, password:String)(implicit session: Session):Boolean={
      KnolXUserTableQuery.filter { x => x.email === email && x.password === password }.list.size>0  
+  }
+  /**
+   * Returns true if the given email address is not found in the table                    
+   * @param: email of the KnolXUser
+   */
+  
+  def isEmailAvailable(email:String)(implicit session: Session):Boolean={
+     KnolXUserTableQuery.filter { x => x.email === email}.list.size<1  
   }
 } 

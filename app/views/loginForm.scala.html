@@ -8,8 +8,7 @@
 <div class="col-md-3">
 <div class="panel panel-default">
   <div class="panel-body">
-  		
-					@form(routes.Application.login()){	
+					@form(action=routes.Application.login(), 'id-> "loginform"){	
 				<div class="form-group">
 					@inputText(userForm("email"), '_label -> "Email")
 					@inputPassword(userForm("password"), '_label -> "Password")
@@ -17,7 +16,7 @@
 						<input type="submit" value="Login" class="btn btn-primary" > 
 					</div>
 				}	    
-				</div>			
+				</div>
   </div>
  </div>
 </div>
@@ -37,5 +36,18 @@
 
 </div>
 </div>
+		<script>
+			$("#loginform").validate({
+				rules : {
+					email : {
+						required : true,
+						email : true
+					},
+					password : {
+						required : true
+					}
+				}
+			})
+		</script>	
 @footerNavigation()
 }

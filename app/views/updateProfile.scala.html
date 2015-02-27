@@ -1,17 +1,17 @@
 @* Update Template File *@
-@(knolXUserForm: Form[KnolXUser])
+@(knolXUserForm: Form[KnolXUser])(implicit session: play.api.mvc.Session)
 <!-- Importing Form Helper -->
 @import helper._
  @main("Home") {
 	<!-- Add User Navigation -->
-	@userNavigation(knolXUserForm.get.email)
+	@userNavigation(session.get("userEmail").get)
 	<div class="container">
 		<div class="page-header">
 			<h3>Update Profile</h3>
 		</div>
 		<div class="row">
 				<div class="col-md-3">
-					@form(routes.Application.update()){	
+					@form(routes.Application.update(), 'id -> "updateForm"){
 				<div class="form-group">
 					@inputText(knolXUserForm("name"), '_label -> "Name")
 					@inputText(knolXUserForm("company"), '_label -> "Company")
@@ -20,8 +20,8 @@
 					@inputText(knolXUserForm("phone"), '_label -> "Phone")
 					@inputText(knolXUserForm("address"), '_label -> "Address")
 				<div class="actions">
-						<input type="submit" value="Update"class="btn btn-primary" > or 
-						<a href="@routes.Application.cancelUpdate(knolXUserForm.get.email)" class="btn btn-default">Cancel</a>
+						<input type="submit" value="Update" class="btn btn-primary" > or 
+						<a href="@routes.Application.cancelUpdate(session.get("userEmail").get)" class="btn btn-default">Cancel</a>
 				</div>
 				}	    
 				</div>			
@@ -32,6 +32,29 @@
 			</div>
 		</div>
 	</div>
+	<!-- Client Side Validations -->
+		<script>
+			$("#updateForm").validate({
+				rules : {
+					email : {
+						required : true,
+						email : true
+					},
+					password : {
+						required : true
+					},
+					company : {
+						required : true
+					},
+					name : {
+						required : true
+					},
+					phone :{
+						required : true,
+						mobile: truesss
+					} 
+				}
+			})
+		</script>	
 	@footerNavigation()
-}
- 
+} 

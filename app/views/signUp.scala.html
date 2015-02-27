@@ -1,13 +1,11 @@
-@* Signup Template File *@
+	@* Signup Template File *@
 @(knolXUserForm: Form[KnolXUser])(implicit flash:play.api.mvc.Flash)
 <!-- Importing Form Helper -->
 @import helper._
-
  @main("Home") {
 	<!-- Begin page content -->
 	<div class="container">
 		@flash.get("error").map { message =>
-           <div class="alert alert-dismissable alert-error">
                <button type="button" class="close" data-dismiss="close">×</button>
                <strong>Error User Exists!</strong>@message 
            </div>
@@ -17,7 +15,7 @@
 		</div>
 		<div class="row">
 				<div class="col-md-8">
-					@form(routes.Application.register()){	
+					@form(routes.Application.register(), 'id-> "signUpForm"){	
 				<div class="form-group">
 					@inputText(knolXUserForm("name"), '_label -> "Name")
 					@inputText(knolXUserForm("company"), '_label -> "Company")
@@ -36,6 +34,30 @@
 			</div>
 		</div>
 	</div>
+	<!-- Client Side Validations for email and Password -->
+		<script>
+			$("#signUpForm").validate({
+				rules : {
+					email : {
+						required : true,
+						email : true
+					},
+					password : {
+						required : true
+					},
+					company : {
+						required : true
+					},
+					name : {
+						required : true
+					},
+					phone :{
+						required : true,
+						number: true
+					} 
+				}
+			})
+		</script>	
 	@footerNavigation()
 }
 
