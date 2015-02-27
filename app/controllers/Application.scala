@@ -26,8 +26,8 @@ object Application extends Controller {
   def index = DBAction { implicit request =>
     //Check for session existence
     request.session.get("userEmail") match {
-      case userMail => Ok(views.html.userLoggedIn(userMail.get))
-      case None     => Redirect("/").withNewSession
+    case None     => Ok(views.html.loginForm(userLoginForm)).withNewSession
+    case userMail => Ok(views.html.userLoggedIn(userMail.get))
     }
 
   }

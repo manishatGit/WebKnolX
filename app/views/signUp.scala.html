@@ -6,9 +6,7 @@
 	<!-- Begin page content -->
 	<div class="container">
 		@flash.get("error").map { message =>
-               <button type="button" class="close" data-dismiss="close">×</button>
-               <strong>Error User Exists!</strong>@message 
-           </div>
+    		<div class = "alert alert-dismissable alter-danger" style="background-color:grey"><p style="color:red">User Exists!<p> </div>
        }
 		<div class="page-header">
 			<h1>Sign Up</h1>
@@ -60,5 +58,4 @@
 		</script>	
 	@footerNavigation()
 }
-
  
