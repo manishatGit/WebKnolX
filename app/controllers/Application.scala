@@ -29,8 +29,8 @@ object Application extends Controller {
       case None     => Ok(views.html.loginForm(userLoginForm)).withNewSession
       case userMail => Ok(views.html.userLoggedIn(userMail.get))
     }
-
   }
+  
   val Home = Redirect(routes.Application.index)
   /**
    * Defines a custom Constraint to check email
@@ -122,8 +122,9 @@ object Application extends Controller {
         formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
         knolxUser => {
           val userEmail = request.session.get("userEmail").get
+          val oldUser = KnolXUserTable.getKnolXUserByEmail(userEmail)
           val userId = KnolXUserTable.getKnolXUserByEmail(userEmail).id
-          val knolderToUpdate: KnolXUser = knolxUser.copy(userId, created = knolxUser.created)
+          val knolderToUpdate: KnolXUser = knolxUser.copy(userId, created = oldUser.created)
           knolderToUpdate.updated = new Date()
           KnolXUserTable.updateKnolXUser(knolderToUpdate)
           Ok(views.html.userLoggedIn(knolderToUpdate.email))

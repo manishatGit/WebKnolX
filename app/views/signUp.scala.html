@@ -18,7 +18,7 @@
 						<div class="form-group">
 							@inputText(knolXUserForm("name"), '_label -> "Name")
 							@inputText(knolXUserForm("company"), '_label -> "Company")
-							@inputText(knolXUserForm("email"), '_label -> "Email")
+							@inputText(knolXUserForm("email"), '_label -> "Email", 'onBlur->"alert('hello');") 
 							@inputPassword(knolXUserForm("password"), '_label -> "Password")
 							@inputText(knolXUserForm("phone"), '_label -> "Phone")
 							@inputText(knolXUserForm("address"), '_label -> "Address")
