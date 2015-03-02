@@ -26,12 +26,11 @@ object Application extends Controller {
   def index = DBAction { implicit request =>
     //Check for session existence
     request.session.get("userEmail") match {
-    case None     => Ok(views.html.loginForm(userLoginForm)).withNewSession
-    case userMail => Ok(views.html.userLoggedIn(userMail.get))
+      case None     => Ok(views.html.loginForm(userLoginForm)).withNewSession
+      case userMail => Ok(views.html.userLoggedIn(userMail.get))
     }
 
   }
-
   val Home = Redirect(routes.Application.index)
   /**
    * Defines a custom Constraint to check email
@@ -49,8 +48,8 @@ object Application extends Controller {
   val passwordCheckConstraint: Constraint[String] = Constraint("constraints.passwordcheck")({
     plainText =>
       val errors = plainText match {
-        case allNumbers() => Seq(ValidationError("Password is all numbers"))
-        case allLetters() => Seq(ValidationError("Password is all letters"))
+        case allNumbers() => Seq(ValidationError("Password must contain letters as well"))
+        case allLetters() => Seq(ValidationError("Password must contain numbers as well"))
         case _            => Nil
       }
       if (errors.isEmpty) {
@@ -71,7 +70,7 @@ object Application extends Controller {
       "address" -> text,
       "company" -> nonEmptyText,
       "email" -> email,
-      "password" -> nonEmptyText,
+      "password" -> nonEmptyText.verifying(passwordCheckConstraint),
       "phone" -> nonEmptyText,
       "userType" -> ignored(2),
       "created" -> ignored(new Date()),
@@ -83,7 +82,7 @@ object Application extends Controller {
   val userLoginForm = Form(
     mapping(
       "email" -> email,
-      "password" -> nonEmptyText.verifying(passwordCheckConstraint))(UserLogin.apply)(UserLogin.unapply))
+      "password" -> nonEmptyText)(UserLogin.apply)(UserLogin.unapply))
 
   /**
    * Handles the submit of 'Signu Up'
@@ -113,7 +112,6 @@ object Application extends Controller {
       case knolXUser => Ok(html.updateProfile(knolXUserForm.fill(knolXUser)))
     }
   }
-
   /**
    * Handles the submit of 'Update KnolXUser'
    */
@@ -122,17 +120,20 @@ object Application extends Controller {
     try {
       knolXUserForm.bindFromRequest.fold(
         formWithErrors => BadRequest(html.updateProfile(formWithErrors)),
-        knolXUser => {
+        knolxUser => {
           val userEmail = request.session.get("userEmail").get
           val userId = KnolXUserTable.getKnolXUserByEmail(userEmail).id
-          val knolderToUpdate: KnolXUser = knolXUser.copy(userId)
+          val knolderToUpdate: KnolXUser = knolxUser.copy(userId, created = knolxUser.created)
           knolderToUpdate.updated = new Date()
           KnolXUserTable.updateKnolXUser(knolderToUpdate)
           Ok(views.html.userLoggedIn(knolderToUpdate.email))
         })
-    }
+    }catch {
+      case e: Exception => Redirect("/update").flashing("error" -> "User Exists")
 
+    }
   }
+  
   /**
    * Handles Cancel update
    */
@@ -152,7 +153,7 @@ object Application extends Controller {
   /**
    * Shows User Login. form
    */
-  def showLogin = DBAction {
+  def showLogin = DBAction { implicit request =>
     Ok(views.html.loginForm(userLoginForm)).withNewSession
   }
 
@@ -183,5 +184,12 @@ object Application extends Controller {
   def signOut = Action {
     Ok(views.html.userLoggedOut("Signed Out")).withNewSession
   }
-
+  /**
+   * This action is used to handle Ajax request
+   *
+   * @return
+   */
+  def ajaxCall = Action { implicit request =>
+    Ok("Ajax Call!")
+  }
 }

@@ -2,36 +2,37 @@
 @(knolXUserForm: Form[KnolXUser])(implicit flash:play.api.mvc.Flash)
 <!-- Importing Form Helper -->
 @import helper._
- @main("Home") {
+ @main("Sign Up") {
 	<!-- Begin page content -->
-	<div class="container">
 		@flash.get("error").map { message =>
-    		<div class = "alert alert-dismissable alter-danger" style="background-color:grey"><p style="color:red">User Exists!<p> </div>
+    		<div class = "alert alert-dismissable alter-danger" ><p style="color:white">User Exists!<p> </div>
+    		<div class="alert alert-warning alert-dismissible" role="alert" style="background-color:grey">
+				  <button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&times;</span></button>
+				  <strong style="background-color:grey"></strong> User Exist.
+			</div>
        }
-		<div class="page-header">
-			<h1>Sign Up</h1>
-		</div>
+	@navigation()
 		<div class="row">
-				<div class="col-md-8">
+				<div class="col-md-6">
 					@form(routes.Application.register(), 'id-> "signUpForm"){	
-				<div class="form-group">
-					@inputText(knolXUserForm("name"), '_label -> "Name")
-					@inputText(knolXUserForm("company"), '_label -> "Company")
-					@inputText(knolXUserForm("email"), '_label -> "Email")
-					@inputPassword(knolXUserForm("password"), '_label -> "Password")
-					@inputText(knolXUserForm("phone"), '_label -> "Phone")
-					@inputText(knolXUserForm("address"), '_label -> "Address")
-				<div class="actions">
-						<input type="submit" value="Register" class="btn btn-primary" > or 
-						<a href="@routes.Application.index" class="btn btn-default">Cancel</a>
+						<div class="form-group">
+							@inputText(knolXUserForm("name"), '_label -> "Name")
+							@inputText(knolXUserForm("company"), '_label -> "Company")
+							@inputText(knolXUserForm("email"), '_label -> "Email")
+							@inputPassword(knolXUserForm("password"), '_label -> "Password")
+							@inputText(knolXUserForm("phone"), '_label -> "Phone")
+							@inputText(knolXUserForm("address"), '_label -> "Address")
+						<div class="actions">
+								<input type="submit" value="Register" class="btn btn-primary" > or 
+								<a href="@routes.Application.index" class="btn btn-default">Cancel</a>
+						</div>
+						}	    
+						</div>			
 				</div>
-				}	    
-				</div>			
-		</div>
-			<div class="col-md-4">
+			<div class="col-md-6">
+			<h1>Sign Up</h1>
 			</div>
 		</div>
-	</div>
 	<!-- Client Side Validations for email and Password -->
 		<script>
 			$("#signUpForm").validate({
@@ -49,10 +50,10 @@
 					name : {
 						required : true
 					},
-					phone :{
+					phone : {
 						required : true,
-						number: true
-					} 
+						number : true
+					}
 				}
 			})
 		</script>	
