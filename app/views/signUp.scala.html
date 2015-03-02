@@ -1,5 +1,5 @@
 	@* Signup Template File *@
-@(knolXUserForm: Form[KnolXUser])(implicit flash:play.api.mvc.Flash)
+@(knolXUserForm: Form[KnolXUser])(implicit flash:play.api.mvc.Flash, req: RequestHeader)
 <!-- Importing Form Helper -->
 @import helper._
  @main("Sign Up") {
@@ -18,7 +18,7 @@
 						<div class="form-group">
 							@inputText(knolXUserForm("name"), '_label -> "Name")
 							@inputText(knolXUserForm("company"), '_label -> "Company")
-							@inputText(knolXUserForm("email"), '_label -> "Email", 'onBlur->"alert('hello');") 
+							@inputText(knolXUserForm("email"), '_label -> "Email", '_id ->"email", 'onBlur-> "isEmailExist()") 
 							@inputPassword(knolXUserForm("password"), '_label -> "Password")
 							@inputText(knolXUserForm("phone"), '_label -> "Phone")
 							@inputText(knolXUserForm("address"), '_label -> "Address")
@@ -56,7 +56,17 @@
 					}
 				}
 			})
-		</script>	
-	@footerNavigation()
+		</script>
+		<script>
+			$("#signUpForm").validate({
+				rules : {
+					email : {
+						required : true,
+						email : true,
+						remote : "@routes.Application.isEmailExist(("reseamanish@gmail.com"))"
+					}
+				}
+			});
+		</script>
+			@footerNavigation()
 }
- 

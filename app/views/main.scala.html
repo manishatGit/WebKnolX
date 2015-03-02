@@ -1,12 +1,13 @@
-@(title: String)(content: Html)
-
+@(title: String)(content: Html)(implicit req: RequestHeader)
 <!DOCTYPE html>
 
 <html>
     <head>
  <!-- Necessary JQuery Script -->  
+    @ajaxScripts(req)
     @scripts("Home")
- <!-- Adding Jquery Validation Script -->
+    <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+     <!-- Adding Jquery Validation Script -->
    	@jqueryValidationScript()
         <title>@title</title>
         @stylesheets("Home")

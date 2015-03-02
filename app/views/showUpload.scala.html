@@ -1,0 +1,20 @@
+@* showUpload Template File *@
+@(fileName: String)(implicit req:RequestHeader)
+@main("Upload Picture"){
+<div class="row">
+<img
+			src="@routes.Assets.at("/images/"+fileName+".jpg")"
+			class="img-responsive" width="20%"></img>
+
+<div>
+@helper.form(action = routes.Application.upload, 'enctype -> "multipart/form-data") {
+    
+    <input type="file" name="picture">
+    
+    <p>
+        <input type="submit">
+    </p>
+}
+</div>			
+</div>
+}

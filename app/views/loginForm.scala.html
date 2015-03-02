@@ -1,6 +1,6 @@
 @* loginForm Template File *@
 @import helper._
-@(userForm: Form[UserLogin])
+@(userForm: Form[UserLogin])(implicit req: RequestHeader)
 @main("login"){
 <!-- Call Login Navigation -->	
  @navigation()

@@ -30,11 +30,8 @@ object Application extends Controller {
       case userMail => Ok(views.html.userLoggedIn(userMail.get))
     }
   }
-  
+
   val Home = Redirect(routes.Application.index)
-  /**
-   * Defines a custom Constraint to check email
-   */
 
   /**
    * password Regular Expression
@@ -129,12 +126,12 @@ object Application extends Controller {
           KnolXUserTable.updateKnolXUser(knolderToUpdate)
           Ok(views.html.userLoggedIn(knolderToUpdate.email))
         })
-    }catch {
+    } catch {
       case e: Exception => Redirect("/update").flashing("error" -> "User Exists")
 
     }
   }
-  
+
   /**
    * Handles Cancel update
    */
@@ -190,7 +187,52 @@ object Application extends Controller {
    *
    * @return
    */
-  def ajaxCall = Action { implicit request =>
-    Ok("Ajax Call!")
+  def ajaxCall(email: String) = Action { implicit request =>
+    Ok(email)
+  }
+
+  /**
+   * Perform actions if email exists
+   */
+
+  def isEmailExist(email: String) = DBAction { implicit request =>
+
+    KnolXUserTable.isEmailAvailable(email) match {
+      case true  => Ok("false")
+      case false => Ok("true")
+    }
+  }
+  /**
+   * Action translating common routes to JavaScript
+   */
+  def javascriptRoutes = Action { implicit request =>
+    import routes.javascript._
+    Ok(
+      Routes.javascriptRouter("jsRoutes")(routes.javascript.Application.isEmailExist)).as("text/javascript")
+  }
+
+  /**
+ * * Handles 'upload profile picture' page
+ */
+    def showupload(email: String) = Action { implicit request =>
+      Ok(views.html.showUpload(email))
+    }
+  
+  /**
+   * Handles profile picture upload
+   */
+  def upload = Action(parse.multipartFormData) {implicit request =>
+    request.body.file("picture").map { picture =>
+      import java.io.File
+      val filename = picture.filename
+      val contentType = picture.contentType
+      val userName = request.session.get("userEmail").get
+      picture.ref.moveTo(new File("public/images/"+userName+".jpg"))
+      Ok(views.html.userLoggedIn(userName))
+    }.getOrElse {
+      Redirect(routes.Application.index).flashing(
+        "error" -> "Missing file")
+    }
+
   }
 }

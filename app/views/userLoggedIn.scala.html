@@ -1,5 +1,5 @@
 @* UserLoggedIn Template File *@
-@(userName: String)
+@(userName: String)(implicit req: RequestHeader)
 @main("Home"){
 @userNavigation(userName)
 @userLoggedInContent("Random Logged In Content")

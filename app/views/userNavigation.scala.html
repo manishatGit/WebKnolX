@@ -14,7 +14,6 @@
 		      </button>
 		      <a class="navbar-brand active" href="@routes.Application.index">Home</a>
 		    </div>
-   
     <!-- Collect the nav links, forms, and other content for toggling -->
        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
@@ -38,8 +37,8 @@
           <ul class="dropdown-menu" role="menu" id="logindropdown">
 			<li>
 			<img
-			src="@routes.Assets.at("images/header.jpg")"
-			class="img-responsive" width="50%"></img>  </li>
+			src="@routes.Assets.at("/images/"+userName+".jpg")"
+			class="img-responsive" width="80%"></img> <a href="@routes.Application.showupload(userName)">change photo</a></li>
 			<li class="divider"></li>
             <li><a href="@routes.Application.showUpdate(userName)">Update Profile</a></li>
             <li><a href="@routes.Application.showLogin">Sign Out</a></li>

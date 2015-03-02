@@ -1,20 +1,15 @@
 /**
  * Implements ajax calling
  */
-$(function() {
-
-	ajaxCall();
-
-});
-
-
-var ajaxCall = function() {
+var ajaxCall = function(email) {
+	var email = $('#eml').val()
+	alert(email)
 	var ajaxCallBack = {
 		success : onSuccess,
 		error : onError
 	}
 
-	jsRoutes.controllers.Application.ajaxCall().ajax(ajaxCallBack);
+	jsRoutes.controllers.Application.ajaxCall(email).ajax(ajaxCallBack);
 };
 
 var onSuccess = function(data) {
